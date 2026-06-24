@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KEN'S DAY</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;700&family=Space+Mono:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sp-red: #CC0000;
+  --sp-blue: #003DA5;
+  --gold: #C8A84B;
+  --sin-gold: #D4AF37;
+  --sin-cream: #F5E6C8;
+  --por-red: #E40521;
+  --por-silver: #B8BBBE;
+  --fer-red: #DC0000;
+  --fer-yellow: #FFC906;
+  --mad-gold: #C89B3C;
+  --white: #F5F3EE;
+  --black: #0A0A0A;
+  --gray: #1A1A1A;
+  --gray2: #2A2A2A;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--black); color: var(--white); font-family: 'Inter', sans-serif; overflow-x: hidden; min-height: 100vh; }
+
+.chapter { display: none; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
+.chapter.active { display: flex; }
+
+@keyframes floatUp { 0%{transform:translateY(0) rotate(-3deg);opacity:1} 80%{opacity:1} 100%{transform:translateY(-110vh) rotate(8deg) scale(.85);opacity:0} }
+@keyframes bob { 0%,100%{transform:translateY(0) rotate(-4deg)} 50%{transform:translateY(-14px) rotate(4deg)} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+@keyframes colon-blink { 0%,100%{opacity:1} 50%{opacity:0.1} }
+@keyframes stripe-move { 0%{background-position:0%} 100%{background-position:300%} }
+@keyframes bday-glow { from{text-shadow:0 0 10px var(--gold)} to{text-shadow:0 0 30px var(--gold),0 0 60px #ff8c0055} }
+@keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes confetti-fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+@keyframes popIn { 0%{transform:scale(0.6);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+
+#ch1 {
+  background:
+    radial-gradient(ellipse at 70% 10%, #3d0010 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, #00083d 0%, transparent 50%),
+    linear-gradient(160deg, #0a0010 0%, #05000a 50%, #000308 100%);
+  padding: 2rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.ch1-web { position:absolute;inset:0;pointer-events:none;opacity:0.18; }
+.ch1-web svg { width:100%;height:100%; }
+.ch1-wrap { width:100%;max-width:420px;position:relative;z-index:2; }
+.ch1-pretitle { font-family:'Space Mono',monospace;font-size:0.65rem;letter-spacing:0.3em;color:#6699ff;text-transform:uppercase;margin-bottom:0.5rem; }
+.ch1-title { font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,12vw,6rem);line-height:0.9;background:linear-gradient(135deg,var(--sp-red),#ff4444,#6699ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1.5rem; }
+.funfact-strip { display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.8rem; }
+.funfact-card { background:rgba(255,255,255,0.04);border:1px solid rgba(204,0,0,0.25);border-left:3px solid var(--sp-red);padding:0.7rem 1rem;text-align:left;border-radius:4px; }
+.funfact-lbl { font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.22em;color:#6699ff;text-transform:uppercase;margin-bottom:0.2rem; }
+.funfact-val { font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--white);line-height:1; }
+.funfact-val span { color:var(--sp-red);text-shadow:0 0 8px rgba(204,0,0,0.5); }
+.funfact-desc { font-size:0.72rem;color:#777;margin-top:0.15rem; }
+.name-lbl { font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.2em;color:#6699ff;text-transform:uppercase;text-align:left;margin-bottom:0.4rem; }
+.name-input { background:rgba(255,255,255,0.05);border:1.5px solid rgba(204,0,0,0.4);border-radius:4px;padding:0.9rem 1.1rem;color:var(--white);font-family:'Inter',sans-serif;font-size:1.05rem;width:100%;outline:none;transition:border-color 0.2s,box-shadow 0.2s;caret-color:var(--sp-red);margin-bottom:0.4rem; }
+.name-input:focus { border-color:var(--sp-red);box-shadow:0 0 15px rgba(204,0,0,0.2); }
+.name-input::placeholder { color:#333; }
+.name-input:disabled { opacity:0.5;cursor:not-allowed; }
+.name-err { font-size:0.72rem;color:var(--sp-red);font-family:'Space Mono',monospace;min-height:1rem;text-align:left;margin-bottom:0.6rem; }
+.name-btn { width:100%;padding:1rem;background:linear-gradient(135deg,var(--sp-red),#6a0000 50%,var(--sp-blue));color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.1em;border:none;cursor:pointer;transition:all 0.2s;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);box-shadow:0 0 20px rgba(204,0,0,0.25); }
+.name-btn:hover:not(:disabled) { box-shadow:0 0 35px rgba(204,0,0,0.5);transform:translateY(-2px); }
+.name-btn:disabled { opacity:0.35;cursor:not-allowed;transform:none; }
+.name-note { font-family:'Space Mono',monospace;font-size:0.58rem;color:#333;letter-spacing:0.15em;margin-top:0.7rem;text-transform:uppercase; }
+
+#ch2 { padding: 0; justify-content: flex-start; align-items: stretch; }
+.sub { display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;gap:1.5rem;position:relative;overflow:hidden; }
+.sub.active { display:flex; }
+
+#sub-intro {
+  background:
+    radial-gradient(ellipse at 70% 10%, #3d0010 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, #00083d 0%, transparent 50%),
+    linear-gradient(160deg, #0a0010 0%, #05000a 50%, #000308 100%);
+  text-align:center;
+}
+#sub-intro::after { content:'';position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(to top,#0d0010 0%,transparent 100%);clip-path:polygon(0% 100%,0% 55%,3% 55%,3% 30%,6% 30%,6% 55%,10% 55%,10% 20%,13% 20%,13% 55%,17% 55%,17% 40%,20% 40%,20% 55%,24% 55%,24% 25%,27% 25%,27% 10%,30% 10%,30% 25%,33% 25%,33% 55%,37% 55%,37% 35%,40% 35%,40% 55%,44% 55%,44% 15%,47% 15%,47% 55%,51% 55%,51% 30%,54% 30%,54% 55%,58% 55%,58% 45%,61% 45%,61% 55%,65% 55%,65% 20%,68% 20%,68% 5%,71% 5%,71% 20%,74% 20%,74% 55%,78% 55%,78% 35%,81% 35%,81% 55%,85% 55%,85% 25%,88% 25%,88% 55%,92% 55%,92% 40%,95% 40%,95% 55%,100% 55%,100% 100%);pointer-events:none;z-index:0; }
+
+.intro-web-bg { position:absolute;inset:0;pointer-events:none;opacity:0.18;z-index:0; }
+.intro-web-bg svg { width:100%;height:100%; }
+.g-title { font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,12vw,8rem);line-height:0.9;letter-spacing:0.02em;color:var(--white);position:relative;z-index:2; }
+.g-title span { color:var(--sp-red); }
+.g-sub { font-family:'Space Mono',monospace;font-size:clamp(0.6rem,2vw,0.8rem);letter-spacing:0.25em;color:#6699ff;text-transform:uppercase;position:relative;z-index:2; }
+.theme-row { display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;position:relative;z-index:2;margin-top:1rem; }
+.theme-ico { font-size:1.7rem;opacity:0.6;transition:opacity 0.3s,transform 0.3s;cursor:default; }
+.theme-ico:hover { opacity:1;transform:scale(1.2); }
+.big-btn { padding:1rem 3rem;background:linear-gradient(135deg,var(--sp-red),#8B0000 50%,var(--sp-blue));color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.1em;border:none;cursor:pointer;transition:all 0.2s;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);box-shadow:0 0 20px rgba(204,0,0,0.3);position:relative;z-index:2;margin-top:1.5rem; }
+.big-btn:hover { box-shadow:0 0 35px rgba(204,0,0,0.55);transform:translateY(-2px); }
+
+#sub-g1 {
+  background:
+    radial-gradient(ellipse at 80% 20%, #2a000a 0%, transparent 45%),
+    radial-gradient(ellipse at 10% 80%, #00072a 0%, transparent 45%),
+    linear-gradient(135deg,#0d0005 0%,#050010 100%);
+}
+#sub-g1::before { content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 49px,rgba(204,0,0,0.05) 49px,rgba(204,0,0,0.05) 50px),repeating-linear-gradient(90deg,transparent,transparent 49px,rgba(0,61,165,0.05) 49px,rgba(0,61,165,0.05) 50px);pointer-events:none; }
+
+#sub-g2 {
+  background:
+    radial-gradient(ellipse at 50% 0%, #1a1200 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 100%, #0a0818 0%, transparent 50%),
+    linear-gradient(180deg,#08060f 0%,#0c0a00 50%,#08060f 100%);
+  justify-content:flex-start;
+  padding-top:1.2rem;
+}
+
+#sub-g3 {
+  background:
+    radial-gradient(ellipse at 50% 0%, #2a0003 0%, transparent 50%),
+    linear-gradient(160deg,#0a0000 0%,#141414 50%,#080808 100%);
+  padding:0;
+  justify-content:flex-start;
+  align-items:stretch;
+}
+
+.game-lbl { font-family:'Space Mono',monospace;font-size:0.68rem;letter-spacing:0.28em;color:#6699ff;text-transform:uppercase; }
+.game-h { font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,8vw,3.8rem);text-align:center;line-height:1; }
+.card { background:rgba(10,0,20,0.8);border:1px solid rgba(204,0,0,0.3);box-shadow:0 0 25px rgba(204,0,0,0.08);padding:1.8rem;width:100%;max-width:500px;text-align:center; }
+.next-btn { padding:0.85rem 2.5rem;background:linear-gradient(135deg,var(--sp-red),#8B0000);color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.08em;border:none;cursor:pointer;transition:all 0.2s;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);box-shadow:0 0 15px rgba(204,0,0,0.3); }
+.next-btn:hover { box-shadow:0 0 25px rgba(204,0,0,0.5);transform:translateY(-2px); }
+.res-box { padding:1.5rem;background:rgba(10,0,20,0.95);border:1px solid rgba(204,0,0,0.4);text-align:center;display:none;width:100%;max-width:500px; }
+.res-box.show { display:block;animation:fadeIn 0.4s ease; }
+.res-title { font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;margin-bottom:0.5rem; }
+.res-sub { font-size:0.82rem;color:#777;margin-bottom:1.2rem; }
+
+.date-grid { display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-top:1.2rem; }
+.date-btn { padding:0.9rem;background:transparent;border:1px solid #333;color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:1.5rem;cursor:pointer;transition:all 0.2s; }
+.date-btn:hover:not(:disabled) { border-color:var(--sp-red);color:var(--sp-red); }
+.date-btn.wrong { border-color:var(--sp-red);color:var(--sp-red);animation:shake 0.3s; }
+.date-btn.correct { border-color:#22c55e;color:#22c55e;background:#22c55e15; }
+.date-btn:disabled { cursor:not-allowed; }
+.attempt-dots { display:flex;gap:0.5rem;justify-content:center;margin-top:1rem; }
+.dot { width:10px;height:10px;border-radius:50%;background:#333;transition:background 0.3s; }
+.dot.used { background:var(--sp-red); }
+
+.qprog { display:flex;gap:0.4rem;justify-content:center;margin-bottom:0.8rem; }
+.qp-dot { width:8px;height:8px;border-radius:50%;background:#333;transition:background 0.3s; }
+.qp-dot.done { background:var(--sin-gold); }
+.qp-dot.cur { background:var(--white); }
+.q-theme-tag { display:inline-block;font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.2em;color:var(--sin-gold);border:1px solid var(--sin-gold);padding:0.2rem 0.6rem;margin-bottom:0.6rem;text-transform:uppercase; }
+.q-text { font-size:0.95rem;line-height:1.5;color:var(--white);margin-bottom:0.8rem; }
+.q-opts { display:flex;flex-direction:column;gap:0.55rem; }
+.q-btn { padding:0.8rem 1rem;background:transparent;border:1px solid #333;color:var(--white);font-family:'Inter',sans-serif;font-size:0.88rem;cursor:pointer;text-align:left;transition:all 0.18s; }
+.q-btn:hover:not(:disabled) { border-color:var(--sin-gold);color:var(--sin-gold);padding-left:1.3rem; }
+.q-btn.correct { border-color:#22c55e;color:#22c55e;background:#22c55e10; }
+.q-btn.wrong { border-color:var(--sp-red);color:var(--sp-red);background:#cc000010; }
+.q-btn:disabled { cursor:not-allowed; }
+.q-feedback { margin-top:0.8rem;font-size:0.8rem;font-family:'Space Mono',monospace;min-height:1.2rem; }
+.score-bar { font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--sin-gold);letter-spacing:0.1em;text-align:right;width:100%;max-width:500px;padding-right:0.2rem;margin-bottom:0.2rem; }
+
+.balloon-header { width:100%;padding:1.2rem 1.5rem 0.5rem;text-align:center;position:relative;z-index:10;background:linear-gradient(to bottom,rgba(0,0,0,0.7),transparent); }
+#balloon-field { position:absolute;inset:0;pointer-events:none;z-index:5; }
+#balloon-start-overlay { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;background:rgba(0,0,0,0.75);gap:0.8rem; }
+.balloon-res { position:absolute;bottom:0;left:0;right:0;z-index:30;padding:1.5rem;background:rgba(5,0,15,0.97);border-top:2px solid var(--sp-red);text-align:center;display:none; }
+.balloon-res.show { display:block;animation:fadeIn 0.35s ease; }
+
+#ch3 {
+  background:
+    radial-gradient(ellipse at 0% 0%, #1a0000 0%, transparent 45%),
+    radial-gradient(ellipse at 100% 0%, #220000 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 100%, #0a0600 0%, transparent 50%),
+    linear-gradient(160deg,#0d0000 0%,#080400 60%,#050000 100%);
+  padding:0;
+  position:relative;
+  overflow:hidden;
+}
+#ch3::before { content:'🐴';position:absolute;bottom:-10px;right:10px;font-size:180px;opacity:0.03;pointer-events:none;transform:scaleX(-1);filter:grayscale(1);line-height:1;z-index:0; }
+
+.cd-stripe { position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--fer-red),var(--fer-yellow),#fff,var(--mad-gold),var(--fer-red));background-size:300%;animation:stripe-move 2s linear infinite;box-shadow:0 0 12px rgba(220,0,0,0.4);z-index:10; }
+.cd-inner { width:100%;max-width:520px;padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;gap:1.8rem;position:relative;z-index:2;text-align:center; }
+.bday-banner { display:none;text-align:center; }
+.bday-banner.show { display:block; }
+.bday-text { font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,6vw,3rem);color:var(--gold);animation:bday-glow 2s ease-in-out infinite alternate; }
+.cd-eyebrow { font-family:'Space Mono',monospace;font-size:0.68rem;letter-spacing:0.35em;color:var(--fer-yellow);text-transform:uppercase;text-shadow:0 0 10px rgba(255,201,6,0.4); }
+.cd-name { font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,16vw,9rem);line-height:0.85;color:var(--white);position:relative; }
+.cd-name::after { content:'KEN';position:absolute;inset:0;color:transparent;-webkit-text-stroke:1px var(--fer-red);transform:translate(3px,3px);z-index:-1; }
+
+.cd-grid { display:flex;gap:0.6rem;align-items:flex-start;justify-content:center;flex-wrap:nowrap; }
+.cd-unit { display:flex;flex-direction:column;align-items:center;gap:0.45rem;flex:1; }
+.cd-num-wrap { background:linear-gradient(145deg,#1a0008,#0d0020);border:2px solid var(--sp-red);border-radius:14px;padding:0.9rem 0.4rem;position:relative;box-shadow:0 0 0 1px rgba(0,61,165,0.3),0 0 18px rgba(204,0,0,0.2);width:100%;text-align:center;overflow:hidden; }
+.cd-num-wrap::after { content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(204,0,0,0.25),rgba(0,61,165,0.25),transparent);pointer-events:none; }
+.cd-num { font-family:'Share Tech Mono',monospace;font-size:clamp(1.7rem,5.5vw,2.6rem);color:var(--white);display:block;line-height:1;letter-spacing:0.05em;text-shadow:0 0 8px rgba(204,0,0,0.5),0 0 20px rgba(0,61,165,0.25);position:relative;z-index:1;font-weight:700; }
+.cd-lbl { font-family:'Space Mono',monospace;font-size:0.5rem;letter-spacing:0.18em;color:#6699ff;text-transform:uppercase;background:rgba(0,61,165,0.12);border:1px solid rgba(0,61,165,0.25);border-radius:20px;padding:0.18rem 0.5rem;width:100%;text-align:center; }
+.cd-colon { font-family:'Share Tech Mono',monospace;font-size:clamp(1.4rem,4.5vw,2rem);color:var(--sp-red);text-shadow:0 0 8px rgba(204,0,0,0.7);animation:colon-blink 1s step-end infinite;padding-bottom:1.6rem;user-select:none;flex-shrink:0; }
+.cd-unit.bday .cd-num-wrap { border-color:var(--fer-red)!important;box-shadow:0 0 25px rgba(220,0,0,0.4)!important; }
+.cd-unit.bday .cd-num { color:var(--fer-red)!important;text-shadow:0 0 8px rgba(220,0,0,0.9),0 0 25px rgba(220,0,0,0.5)!important; }
+
+.chat-wrap { width:100%;max-width:340px;background:#111;border:1px solid #222;overflow:hidden; }
+.chat-hdr { background:#075E54;padding:0.7rem 1rem;display:flex;align-items:center;gap:0.7rem;font-size:0.82rem;font-weight:600; }
+.chat-av { width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:0.9rem; }
+.chat-body { padding:0.9rem;min-height:100px;display:flex;flex-direction:column;gap:0.55rem;background:#0a1a12; }
+.bubble { max-width:82%;padding:0.55rem 0.85rem;font-size:0.88rem;line-height:1.4;border-radius:8px;opacity:0;transform:translateY(10px);transition:opacity 0.4s,transform 0.4s; }
+.bubble.show { opacity:1;transform:translateY(0); }
+.bubble.recv { background:#202C33;color:var(--white);align-self:flex-start;border-bottom-left-radius:2px; }
+.bubble-time { font-size:0.58rem;color:#8899AA;margin-top:0.25rem;text-align:right; }
+.typing-ind { display:flex;gap:4px;align-items:center;padding:0.55rem 0.85rem;background:#202C33;border-radius:8px;border-bottom-left-radius:2px;align-self:flex-start;opacity:0;transition:opacity 0.3s;width:52px; }
+.typing-ind.show { opacity:1; }
+.t-dot { width:6px;height:6px;border-radius:50%;background:#8899AA;animation:t-bounce 1s infinite; }
+.t-dot:nth-child(2){animation-delay:0.15s} .t-dot:nth-child(3){animation-delay:0.3s}
+@keyframes t-bounce{0%,80%,100%{transform:scale(0.8);opacity:0.5}40%{transform:scale(1.1);opacity:1}}
+
+.wa-sect { width:100%;max-width:340px;text-align:center; }
+.wa-note-lbl { font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--fer-yellow);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.7rem; }
+.wa-btn { display:inline-flex;align-items:center;gap:0.7rem;padding:0.9rem 1.8rem;background:#25D366;color:#000;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.08em;border:none;cursor:pointer;transition:all 0.2s;width:100%;justify-content:center;border:1px solid rgba(200,155,60,0.25); }
+.wa-btn:hover { background:#1da851;transform:translateY(-2px); }
+.wa-btn.locked { background:#222;color:#444;cursor:not-allowed;pointer-events:none; }
+.wa-sub { font-family:'Space Mono',monospace;font-size:0.6rem;color:#444;margin-top:0.6rem;letter-spacing:0.1em; }
+
+#sub-cert {
+  background:
+    radial-gradient(ellipse at 50% 0%, #0a0818 0%, transparent 60%),
+    linear-gradient(160deg,#050312 0%,#08060f 100%);
+}
+#sub-cert::before { content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 30%,rgba(200,155,60,0.07) 0%,transparent 30%),radial-gradient(circle at 80% 70%,rgba(200,155,60,0.07) 0%,transparent 30%);pointer-events:none; }
+.cert-eyebrow { font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:0.35em;color:var(--mad-gold);text-transform:uppercase;text-shadow:0 0 10px rgba(200,155,60,0.4); }
+.cert-paper { width:100%;max-width:400px;background:linear-gradient(145deg,#fafaf5,#f0ede0);border:1px solid #c8a84b;border-radius:3px;padding:2.2rem 1.8rem;text-align:center;position:relative;box-shadow:0 0 0 5px rgba(200,155,60,0.1),0 0 0 6px rgba(200,155,60,0.28),0 16px 50px rgba(0,0,0,0.5);color:#1a1a1a;overflow:hidden; }
+.cert-paper::before { content:'✦';position:absolute;top:9px;left:13px;font-size:0.95rem;color:var(--mad-gold);opacity:0.55; }
+.cert-paper::after  { content:'✦';position:absolute;bottom:9px;right:13px;font-size:0.95rem;color:var(--mad-gold);opacity:0.55; }
+.cert-stripe-top { height:3px;background:linear-gradient(90deg,transparent,var(--mad-gold),#fff,var(--mad-gold),transparent);margin:-2.2rem -1.8rem 1.3rem; }
+.cert-of { font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.32em;color:#888;text-transform:uppercase;margin-bottom:0.4rem; }
+.cert-title { font-family:'Bebas Neue',sans-serif;font-size:1.65rem;letter-spacing:0.07em;color:#111;margin-bottom:0.2rem; }
+.cert-sub { font-size:0.72rem;color:#888;font-style:italic;margin-bottom:1.2rem;font-family:'Inter',sans-serif; }
+.cert-div { height:1px;background:linear-gradient(90deg,transparent,var(--mad-gold),transparent);margin:0.9rem 0; }
+.cert-rec-lbl { font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.18em;color:#aaa;text-transform:uppercase;margin-bottom:0.35rem; }
+.cert-name { font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#111;letter-spacing:0.05em;line-height:1;margin-bottom:0.2rem; }
+.cert-crest { font-size:2.2rem;margin:0.8rem 0;display:block; }
+.cert-body { font-family:'Inter',sans-serif;font-size:0.76rem;color:#555;line-height:1.55;margin-bottom:0.8rem;padding:0 0.3rem; }
+.cert-body strong { color:#222; }
+.cert-score { font-family:'Space Mono',monospace;font-size:0.68rem;color:#888;margin-bottom:0.4rem; }
+.cert-stars { color:var(--mad-gold);font-size:0.95rem;letter-spacing:0.18rem;margin-bottom:0.8rem;display:block; }
+.cert-sig { font-family:'Inter',sans-serif;font-size:0.68rem;color:#aaa;border-top:1px solid #ddd;padding-top:0.6rem;margin-top:0.4rem; }
+.cert-sig strong { color:#555; }
+.cert-stripe-bot { height:3px;background:linear-gradient(90deg,transparent,var(--mad-gold),#fff,var(--mad-gold),transparent);margin:1.2rem -1.8rem -2.2rem; }
+.cert-btns { display:flex;gap:0.65rem;width:100%;max-width:400px;flex-wrap:wrap; }
+.cert-btn { padding:0.8rem 1.2rem;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:0.07em;border:none;cursor:pointer;transition:all 0.2s;flex:1;min-width:110px; }
+.cert-btn-gold { background:linear-gradient(135deg,var(--mad-gold),#8a6010);color:#fff;box-shadow:0 0 15px rgba(200,155,60,0.25); }
+.cert-btn-gold:hover { background:linear-gradient(135deg,#e8c840,var(--mad-gold));transform:translateY(-2px); }
+.cert-btn-out { background:transparent;color:var(--mad-gold);border:1px solid rgba(200,155,60,0.35); }
+.cert-btn-out:hover { border-color:var(--mad-gold);background:rgba(200,155,60,0.07); }
+
+.confetti-piece { position:fixed;width:8px;height:8px;pointer-events:none;z-index:9999;animation:confetti-fall linear forwards; }
+</style>
+</head>
+<body>
+
+<div id="ch1" class="chapter active">
+  <div class="ch1-web">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <g stroke="white" stroke-width="0.4" fill="none">
+        <line x1="400" y1="300" x2="0" y2="0"/><line x1="400" y1="300" x2="200" y2="0"/>
+        <line x1="400" y1="300" x2="400" y2="0"/><line x1="400" y1="300" x2="600" y2="0"/>
+        <line x1="400" y1="300" x2="800" y2="0"/><line x1="400" y1="300" x2="800" y2="300"/>
+        <line x1="400" y1="300" x2="800" y2="600"/><line x1="400" y1="300" x2="400" y2="600"/>
+        <line x1="400" y1="300" x2="0" y2="600"/><line x1="400" y1="300" x2="0" y2="300"/>
+        <ellipse cx="400" cy="300" rx="80" ry="80"/>
+        <ellipse cx="400" cy="300" rx="190" ry="175"/>
+        <ellipse cx="400" cy="300" rx="310" ry="290"/>
+        <ellipse cx="400" cy="300" rx="440" ry="410"/>
+      </g>
+    </svg>
+  </div>
+  <div class="ch1-wrap">
+    <p class="ch1-pretitle">A surprise built for</p>
+    <h1 class="ch1-title">KEN'S<br>WORLD</h1>
+    <div class="funfact-strip">
+      <div class="funfact-card">
+        <p class="funfact-lbl">📅 Days Since Kenzou Was Born</p>
+        <p class="funfact-val"><span>5,101</span> days</p>
+        <p class="funfact-desc">That's 13 years, 11 months, and counting 🔥</p>
+      </div>
+      <div class="funfact-card">
+        <p class="funfact-lbl">🕷️ Fun Fact</p>
+        <p class="funfact-val"><span>July 6</span> siblings</p>
+        <p class="funfact-desc">Lu satu tanggal ultah sama Sylvester Stallone & 50 Cent 💀</p>
+      </div>
+      <div class="funfact-card">
+        <p class="funfact-lbl">🏎️ Car Fact</p>
+        <p class="funfact-val"><span>9,000</span> RPM</p>
+        <p class="funfact-desc">Redline Ferrari 458 Speciale — sama kayak semangat lu tiap hari 😹</p>
+      </div>
+    </div>
+    <p class="name-lbl">Your name</p>
+    <input class="name-input" id="nameInput" type="text" placeholder="Type your name here..." maxlength="30" autocomplete="off" oninput="onNameType()" onkeydown="if(event.key==='Enter')submitName()"/>
+    <p class="name-err" id="nameErr"></p>
+    <button class="name-btn" id="nameBtn" onclick="submitName()" disabled>LET'S GO 🕷️</button>
+    <p class="name-note">⚠ Name cannot be changed after submitting</p>
+  </div>
+</div>
+
+<div id="ch2" class="chapter">
+  <div id="sub-intro" class="sub active">
+    <div class="intro-web-bg">
+      <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+        <g stroke="white" stroke-width="0.4" fill="none" opacity="0.9">
+          <line x1="400" y1="300" x2="0" y2="0"/><line x1="400" y1="300" x2="200" y2="0"/>
+          <line x1="400" y1="300" x2="400" y2="0"/><line x1="400" y1="300" x2="600" y2="0"/>
+          <line x1="400" y1="300" x2="800" y2="0"/><line x1="400" y1="300" x2="800" y2="150"/>
+          <line x1="400" y1="300" x2="800" y2="300"/><line x1="400" y1="300" x2="800" y2="450"/>
+          <line x1="400" y1="300" x2="800" y2="600"/><line x1="400" y1="300" x2="600" y2="600"/>
+          <line x1="400" y1="300" x2="400" y2="600"/><line x1="400" y1="300" x2="200" y2="600"/>
+          <line x1="400" y1="300" x2="0" y2="600"/><line x1="400" y1="300" x2="0" y2="450"/>
+          <line x1="400" y1="300" x2="0" y2="300"/><line x1="400" y1="300" x2="0" y2="150"/>
+          <ellipse cx="400" cy="300" rx="80" ry="80"/>
+          <ellipse cx="400" cy="300" rx="160" ry="155"/>
+          <ellipse cx="400" cy="300" rx="250" ry="240"/>
+          <ellipse cx="400" cy="300" rx="350" ry="330"/>
+          <ellipse cx="400" cy="300" rx="450" ry="420"/>
+        </g>
+      </svg>
+    </div>
+    <p class="g-sub" id="intro-greeting">Welcome</p>
+    <h1 class="g-title">KEN'S<br><span>DAY</span></h1>
+    <p class="g-sub">July 6 · Complete all challenges to unlock</p>
+    <div class="theme-row">
+      <span class="theme-ico">🕷️</span><span class="theme-ico">🎷</span>
+      <span class="theme-ico">🏎️</span><span class="theme-ico">🐴</span>
+      <span class="theme-ico">⚽</span><span class="theme-ico">🏆</span>
+    </div>
+    <button class="big-btn" onclick="soundSpider();goSub('sub-g1')">START THE CHALLENGE</button>
+  </div>
+
+  <div id="sub-g1" class="sub">
+    <p class="game-lbl">Challenge 01 of 03</p>
+    <h2 class="game-h">GUESS THE<br>BIRTHDAY DATE</h2>
+    <div class="card">
+      <p style="font-size:0.82rem;color:#777;margin-bottom:0.4rem;">What day is Ken born?</p>
+      <p style="font-size:0.72rem;color:#444;font-family:'Space Mono',monospace;">Month: July</p>
+      <div class="attempt-dots" id="g1-dots">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+      <div class="date-grid" id="g1-opts">
+        <button class="date-btn" onclick="guessDate(this,4)">4</button>
+        <button class="date-btn" onclick="guessDate(this,6)">6</button>
+        <button class="date-btn" onclick="guessDate(this,11)">11</button>
+        <button class="date-btn" onclick="guessDate(this,19)">19</button>
+        <button class="date-btn" onclick="guessDate(this,23)">23</button>
+        <button class="date-btn" onclick="guessDate(this,29)">29</button>
+      </div>
+    </div>
+    <div class="res-box" id="g1-res">
+      <p class="res-title" id="g1-res-title">—</p>
+      <p class="res-sub" id="g1-res-sub">—</p>
+      <button class="next-btn" onclick="soundSinatra();goSub('sub-g2')">NEXT: QUIZ →</button>
+    </div>
+  </div>
+
+  <div id="sub-g2" class="sub">
+    <p class="score-bar" id="q-score-bar">Score: 0 / 6</p>
+    <p class="game-lbl">Challenge 02 of 03</p>
+    <h2 class="game-h" style="background:linear-gradient(135deg,var(--sin-cream),var(--sin-gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">KEN'S WORLD<br>QUIZ</h2>
+    <div class="card" id="q-card" style="background:rgba(8,6,15,0.9);border-color:rgba(212,175,55,0.3);">
+      <div class="qprog" id="q-prog"></div>
+      <div class="q-theme-tag" id="q-tag">—</div>
+      <p class="q-text" id="q-text">Loading...</p>
+      <div class="q-opts" id="q-opts"></div>
+      <p class="q-feedback" id="q-fb"></p>
+    </div>
+    <div class="res-box" id="g2-res" style="background:rgba(8,6,15,0.95);border-color:rgba(212,175,55,0.35);">
+      <p class="res-title" id="g2-res-title">—</p>
+      <p class="res-sub" id="g2-res-sub">—</p>
+      <button class="next-btn" style="background:linear-gradient(135deg,var(--sin-gold),#8a6010);color:#fff;" onclick="goSub('sub-g3')">FINAL GAME →</button>
+    </div>
+  </div>
+
+  <div id="sub-g3" class="sub">
+    <div class="balloon-header">
+      <p class="game-lbl">Challenge 03 of 03</p>
+      <h2 class="game-h" style="font-size:clamp(1.7rem,7vw,2.8rem);">POP THE BALLOONS!</h2>
+      <p style="font-size:0.72rem;color:#666;margin-bottom:0.5rem;">Tap 🕷️🕸️🐴🏎️ — avoid 💣💀 — 20 seconds</p>
+      <div style="display:flex;justify-content:center;gap:2rem;font-family:'Space Mono',monospace;font-size:0.82rem;font-weight:700;">
+        <span id="bl-timer" style="color:var(--sp-red);">⏱ 20s</span>
+        <span id="bl-score" style="color:var(--sin-gold);">💥 0</span>
+      </div>
+    </div>
+    <div id="balloon-field"></div>
+    <div id="balloon-start-overlay">
+      <div style="font-size:3.5rem;animation:bob 1.5s ease-in-out infinite;">🕷️🐴</div>
+      <p style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--white);">TAP TO START!</p>
+      <p style="font-size:0.72rem;color:#666;text-align:center;max-width:250px;">Pop Spider-Man & Ferrari balloons<br>Avoid 💣 bombs!</p>
+      <button onclick="startBalloons()" style="background:linear-gradient(135deg,var(--sp-red),var(--sp-blue));color:#fff;border:none;padding:0.9rem 2.2rem;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;border-radius:50px;cursor:pointer;box-shadow:0 0 25px rgba(204,0,0,0.4);">GO! 🕷️</button>
+    </div>
+    <div class="balloon-res" id="bl-res">
+      <p class="res-title" id="bl-res-title">—</p>
+      <p class="res-sub" id="bl-res-sub">—</p>
+      <button class="next-btn" id="bl-next-btn">→</button>
+    </div>
+  </div>
+
+  <div id="sub-cert" class="sub">
+    <p class="cert-eyebrow">🏆 You Got It Perfect!</p>
+    <div class="cert-paper">
+      <div class="cert-stripe-top"></div>
+      <p class="cert-of">Certificate of</p>
+      <h2 class="cert-title">Official Ken Expert™</h2>
+      <p class="cert-sub">hereby granted with full sincerity</p>
+      <div class="cert-div"></div>
+      <p class="cert-rec-lbl">Awarded to</p>
+      <p class="cert-name" id="cert-name-el">—</p>
+      <span class="cert-crest">🏆</span>
+      <p class="cert-body">This certifies that <strong id="cert-name2-el">—</strong> has successfully completed all challenges with a <strong>perfect score</strong> — proving true knowledge of Ken's world. From Spider-Man to Frank Sinatra, Porsche to Ferrari, Leclerc to Gareth Bale.<br><br><em>Real ones only. 🤝</em></p>
+      <p class="cert-score">Quiz Score: <strong id="cert-score-el">6 / 6</strong> ⭐</p>
+      <span class="cert-stars" id="cert-stars-el">★★★★★</span>
+      <div class="cert-div"></div>
+      <p class="cert-sig">Signed with love ❤️<br><strong>Est. July 6, 2012 🎂</strong></p>
+      <div class="cert-stripe-bot"></div>
+    </div>
+    <div class="cert-btns">
+      <button class="cert-btn cert-btn-gold" onclick="goChapter('ch3')">🎂 View Countdown →</button>
+      <button class="cert-btn cert-btn-out" onclick="goSub('sub-intro')">↺ Play Again</button>
+    </div>
+  </div>
+</div>
+
+<div id="ch3" class="chapter">
+  <div class="cd-stripe"></div>
+  <div class="cd-inner">
+    <div class="bday-banner" id="bday-banner">
+      <p class="bday-text">🎉 HAPPY BIRTHDAY KEN! 🎉</p>
+    </div>
+    <div>
+      <p class="cd-eyebrow">Countdown to</p>
+      <h1 class="cd-name">KEN</h1>
+      <p style="font-family:'Space Mono',monospace;font-size:0.65rem;color:#444;letter-spacing:0.2em;margin-top:0.4rem;">JULY 6 · THE DAY</p>
+    </div>
+    <div class="cd-grid">
+      <div class="cd-unit" id="cd-days-u"><div class="cd-num-wrap"><span class="cd-num" id="cd-d">--</span></div><p class="cd-lbl">Days</p></div>
+      <span class="cd-colon">:</span>
+      <div class="cd-unit" id="cd-hours-u"><div class="cd-num-wrap"><span class="cd-num" id="cd-h">--</span></div><p class="cd-lbl">Hours</p></div>
+      <span class="cd-colon">:</span>
+      <div class="cd-unit" id="cd-mins-u"><div class="cd-num-wrap"><span class="cd-num" id="cd-m">--</span></div><p class="cd-lbl">Mins</p></div>
+      <span class="cd-colon">:</span>
+      <div class="cd-unit" id="cd-secs-u"><div class="cd-num-wrap"><span class="cd-num" id="cd-s">--</span></div><p class="cd-lbl">Secs</p></div>
+    </div>
+    <div>
+      <p style="font-family:'Space Mono',monospace;font-size:0.6rem;letter-spacing:0.18em;color:#333;text-transform:uppercase;margin-bottom:0.6rem;text-align:center;">A message for you</p>
+      <div class="chat-wrap">
+        <div class="chat-hdr">
+          <div class="chat-av">👤</div>
+          <div>
+            <div>My Twin</div>
+            <div style="font-size:0.65rem;opacity:0.65;">online</div>
+          </div>
+        </div>
+        <div class="chat-body" id="chat-body">
+          <div class="typing-ind" id="typing-ind">
+            <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wa-sect">
+      <p class="wa-note-lbl" id="wa-note">Available July 5–7</p>
+      <button class="wa-btn locked" id="wa-btn" onclick="sendWA()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        SEND BIRTHDAY WISH
+      </button>
+      <p class="wa-sub" id="wa-sub-note"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+let playerName = '';
+let quizScore  = 0;
+let quizIdx    = 0;
+let quizAnswered = false;
+let g1Done = false, g1Attempts = 0;
+let blInterval = null, blTimerInterval = null, blScore = 0, blTime = 20, blRunning = false;
+
+function goChapter(id) {
+  document.querySelectorAll('.chapter').forEach(c => c.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if (id === 'ch3') { soundUnlock(); initCountdown(); startChatAnim(); checkWA(); }
+}
+
+function goSub(id) {
+  document.querySelectorAll('.sub').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if (id === 'sub-g2') initQuiz();
+  if (id === 'sub-g3') initBalloons();
+  if (id === 'sub-cert') showCert();
+}
+
+function onNameType() {
+  const v = document.getElementById('nameInput').value.trim();
+  const btn = document.getElementById('nameBtn');
+  const err = document.getElementById('nameErr');
+  if (v.length === 0) { btn.disabled = true; err.textContent = ''; }
+  else if (v.length < 2) { btn.disabled = true; err.textContent = 'Min 2 characters'; }
+  else { btn.disabled = false; err.textContent = ''; }
+}
+
+function submitName() {
+  const v = document.getElementById('nameInput').value.trim();
+  if (v.length < 2) return;
+  playerName = v;
+  document.getElementById('nameInput').disabled = true;
+  document.getElementById('nameBtn').disabled   = true;
+  soundSpider();
+  document.getElementById('intro-greeting').textContent = 'Hey ' + playerName + ' 👋';
+  setTimeout(() => goChapter('ch2'), 350);
+}
+
+function guessDate(btn, val) {
+  if (g1Done) return;
+  soundClick();
+  if (val === 6) {
+    btn.classList.add('correct');
+    g1Done = true;
+    disableG1();
+    soundCorrect();
+    showG1Result(true);
+  } else {
+    btn.classList.add('wrong');
+    btn.disabled = true;
+    g1Attempts++;
+    soundWrong();
+    document.querySelectorAll('#g1-dots .dot').forEach((d,i) => { if(i<g1Attempts) d.classList.add('used'); });
+    setTimeout(() => btn.classList.remove('wrong'), 400);
+    if (g1Attempts >= 3) {
+      g1Done = true; disableG1();
+      document.querySelectorAll('.date-btn').forEach(b => { if(parseInt(b.textContent)===6) b.classList.add('correct'); });
+      showG1Result(false);
+    }
+  }
+}
+function disableG1() { document.querySelectorAll('.date-btn').forEach(b => b.disabled = true); }
+function showG1Result(win) {
+  const t = document.getElementById('g1-res-title');
+  const s = document.getElementById('g1-res-sub');
+  t.textContent = win ? '🎯 NICE!' : 'CLOSE ENOUGH 😹';
+  t.style.color  = win ? '#22c55e' : 'var(--sin-gold)';
+  s.textContent  = win ? 'July 6 it is.' : 'The answer was July 6.';
+  document.getElementById('g1-res').classList.add('show');
+}
+
+const QUIZ = [
+  { theme:'Spider-Man', q:'Which villain gave Peter Parker the black symbiote suit?', opts:['The Vulture','Venom / The Symbiote','Doctor Octopus','Electro'], ans:1, fact:'Alien symbiote first appeared in Secret Wars #8, 1984 🕷️' },
+  { theme:'Frank Sinatra', q:"Frank Sinatra's signature hat — which style is most associated with him?", opts:['Cowboy hat','Trilby','Fedora','Flat cap'], ans:2, fact:"Ol' Blue Eyes wore fedoras almost everywhere. Classic. 🎷" },
+  { theme:'Porsche 911 GT3 RS', q:'The Porsche 911 GT3 RS uses which transmission for max performance?', opts:['Manual 6-speed','PDK dual-clutch','CVT','Torque converter auto'], ans:1, fact:'PDK shifts in milliseconds 🏎️' },
+  { theme:'Ferrari 458 Speciale', q:'The Ferrari 458 Speciale produces how much horsepower?', opts:['500 hp','562 hp','597 hp','620 hp'], ans:1, fact:'562 hp, 9000 rpm redline — last great NA Ferrari 🐴' },
+  { theme:'Ferrari & Leclerc', q:"Charles Leclerc's first F1 victory came at which circuit?", opts:['Monaco','Spa-Francorchamps','Monza','Silverstone'], ans:1, fact:"Spa 2019 — two days after Anthoine Hubert's death 🔴" },
+  { theme:'Real Madrid & Gareth Bale', q:"Gareth Bale's overhead kick in the 2018 UCL Final was against which club?", opts:['Juventus','Bayern Munich','Liverpool','PSG'], ans:2, fact:'vs Liverpool in Kyiv — one of the greatest UCL final goals ever ⚽' },
+];
+
+function initQuiz() {
+  quizScore = 0; quizIdx = 0; quizAnswered = false;
+  renderQProg(); renderQ();
+  document.getElementById('q-score-bar').textContent = 'Score: 0 / 6';
+  document.getElementById('g2-res').classList.remove('show');
+  document.getElementById('q-card').style.opacity = '1';
+}
+
+function renderQProg() {
+  const bar = document.getElementById('q-prog');
+  bar.innerHTML = '';
+  QUIZ.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = 'qp-dot' + (i<quizIdx?' done':i===quizIdx?' cur':'');
+    bar.appendChild(d);
+  });
+}
+
+function renderQ() {
+  if (quizIdx >= QUIZ.length) { showQuizResult(); return; }
+  quizAnswered = false;
+  const q = QUIZ[quizIdx];
+  document.getElementById('q-tag').textContent = q.theme;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-fb').textContent = '';
+  renderQProg();
+  const sfxMap = {'Spider-Man':soundSpider,'Frank Sinatra':soundSinatra,'Porsche 911 GT3 RS':soundPorsche,'Ferrari 458 Speciale':soundFerrari,'Ferrari & Leclerc':soundF1,'Real Madrid & Gareth Bale':soundMadrid};
+  const sfx = sfxMap[q.theme]; if(sfx) setTimeout(sfx,300);
+  const opts = document.getElementById('q-opts');
+  opts.innerHTML = '';
+  q.opts.forEach((opt,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'q-btn';
+    btn.textContent = opt;
+    btn.onclick = () => answerQ(i,btn);
+    opts.appendChild(btn);
+  });
+}
+
+function answerQ(i, btn) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = QUIZ[quizIdx];
+  document.querySelectorAll('.q-btn').forEach(b => b.disabled = true);
+  const fb = document.getElementById('q-fb');
+  if (i === q.ans) {
+    btn.classList.add('correct'); quizScore++; soundCorrect();
+    fb.textContent = '✓ ' + q.fact; fb.style.color = '#22c55e';
+  } else {
+    btn.classList.add('wrong'); soundWrong();
+    document.querySelectorAll('.q-btn')[q.ans].classList.add('correct');
+    fb.textContent = '✗ ' + q.fact; fb.style.color = 'var(--sp-red)';
+  }
+  document.getElementById('q-score-bar').textContent = 'Score: ' + quizScore + ' / 6';
+  quizIdx++;
+  setTimeout(() => { if(quizIdx < QUIZ.length) renderQ(); else showQuizResult(); }, 1800);
+}
+
+function showQuizResult() {
+  document.getElementById('q-card').style.opacity = '0.3';
+  const t = document.getElementById('g2-res-title');
+  const s = document.getElementById('g2-res-sub');
+  const pct = quizScore / QUIZ.length;
+  if (pct === 1) { t.textContent = '🔥 PERFECT!'; t.style.color='var(--sin-gold)'; s.textContent='6/6 — real Ken expert fr 🏆'; }
+  else if (pct >= 0.5) { t.textContent = quizScore+'/6 — NOT BAD'; t.style.color='var(--white)'; s.textContent="Could've been worse 😹"; }
+  else { t.textContent = quizScore+'/6 — YIKES'; t.style.color='var(--sp-red)'; s.textContent='Do u even know Ken bro 💀'; }
+  document.getElementById('g2-res').classList.add('show');
+}
+
+const GOOD = ['🕷️','🕸️','🐴','🐎','🏎️'];
+const BAD  = ['💣','💀','🚫'];
+
+function initBalloons() {
+  blScore=0; blTime=20; blRunning=false;
+  clearInterval(blInterval); clearInterval(blTimerInterval);
+  document.getElementById('balloon-field').innerHTML='';
+  document.getElementById('bl-score').textContent='💥 0';
+  const te=document.getElementById('bl-timer');
+  te.textContent='⏱ 20s'; te.style.color='var(--sp-red)'; te.style.fontWeight='';
+  document.getElementById('balloon-start-overlay').style.display='flex';
+  document.getElementById('bl-res').classList.remove('show');
+}
+
+function startBalloons() {
+  document.getElementById('balloon-start-overlay').style.display='none';
+  blRunning=true; soundFerrari();
+  blInterval = setInterval(spawnBalloon, 550);
+  blTimerInterval = setInterval(() => {
+    blTime--;
+    const te=document.getElementById('bl-timer');
+    te.textContent='⏱ '+blTime+'s';
+    if(blTime<=5){te.style.color='#ff4444';te.style.fontWeight='900';}
+    if(blTime<=0) endBalloons();
+  },1000);
+}
+
+function spawnBalloon() {
+  const field=document.getElementById('balloon-field');
+  if(!field||!blRunning) return;
+  const isBad=Math.random()<0.2;
+  const emoji=isBad?BAD[Math.floor(Math.random()*BAD.length)]:GOOD[Math.floor(Math.random()*GOOD.length)];
+  const el=document.createElement('div');
+  const sz=65+Math.floor(Math.random()*25);
+  const lft=4+Math.random()*82;
+  const dur=4.5+Math.random()*2.5;
+  el.style.cssText=`position:absolute;left:${lft}%;bottom:-80px;font-size:${sz}px;line-height:1;cursor:pointer;user-select:none;pointer-events:auto;animation:floatUp ${dur}s ease-in forwards;z-index:6;transition:transform 0.08s,opacity 0.08s;padding:10px;`;
+  el.textContent=emoji;
+  el.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(!blRunning) return;
+    if(isBad){blScore=Math.max(0,blScore-2);soundWrong();}
+    else{blScore++;soundClick();}
+    el.style.transform='scale(1.6)';el.style.opacity='0';
+    document.getElementById('bl-score').textContent='💥 '+blScore;
+    setTimeout(()=>el.remove(),120);
+  });
+  el.addEventListener('animationend',()=>el.remove());
+  field.appendChild(el);
+}
+
+function endBalloons() {
+  blRunning=false;
+  clearInterval(blInterval); clearInterval(blTimerInterval);
+  document.getElementById('balloon-field').innerHTML='';
+  const t=document.getElementById('bl-res-title');
+  const s=document.getElementById('bl-res-sub');
+  const btn=document.getElementById('bl-next-btn');
+  let grade,comment;
+  if(blScore>=18){grade='🔥 INSANE! '+blScore+' POPS';comment='Leclerc pit stop speed 😹';}
+  else if(blScore>=12){grade='✅ GOOD — '+blScore+' POPS';comment='Spider-Man approved 🕷️';}
+  else if(blScore>=6){grade='😅 '+blScore+' POPS';comment='Next time focus more 💀';}
+  else{grade='💀 ONLY '+blScore+' POPS';comment='Bro u good? 😹';}
+  t.textContent=grade; t.style.color='var(--sin-gold)'; s.textContent=comment;
+  if(quizScore===6){
+    btn.textContent='🏆 CLAIM CERTIFICATE →';
+    btn.onclick=()=>goSub('sub-cert');
+  } else {
+    btn.textContent='🎂 VIEW COUNTDOWN →';
+    btn.onclick=()=>goChapter('ch3');
+  }
+  document.getElementById('bl-res').classList.add('show');
+}
+
+function showCert() {
+  const name = playerName || 'You';
+  document.getElementById('cert-name-el').textContent  = name.toUpperCase();
+  document.getElementById('cert-name2-el').textContent = name;
+  document.getElementById('cert-score-el').textContent = quizScore + ' / 6';
+  const stars = quizScore===6?'★★★★★':quizScore>=4?'★★★★☆':'★★★☆☆';
+  document.getElementById('cert-stars-el').textContent = stars;
+  launchConfetti();
+}
+
+function initCountdown() {
+  tickCountdown();
+  setInterval(tickCountdown,1000);
+}
+
+function tickCountdown() {
+  const now=new Date();
+  let target=new Date(now.getFullYear(),6,6,0,0,0);
+  const isBday=now.getMonth()===6&&now.getDate()===6;
+  if(now>=target&&!isBday) target=new Date(now.getFullYear()+1,6,6,0,0,0);
+  const diff=Math.max(0,target-now);
+  const d=Math.floor(diff/86400000);
+  const h=Math.floor((diff%86400000)/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const s=Math.floor((diff%60000)/1000);
+  const prev=document.getElementById('cd-s').textContent;
+  document.getElementById('cd-d').textContent=pad2(d);
+  document.getElementById('cd-h').textContent=pad2(h);
+  document.getElementById('cd-m').textContent=pad2(m);
+  document.getElementById('cd-s').textContent=pad2(s);
+  if(prev!==pad2(s)) soundTick();
+  if(isBday){
+    document.getElementById('bday-banner').classList.add('show');
+    ['cd-days-u','cd-hours-u','cd-mins-u','cd-secs-u'].forEach(id=>document.getElementById(id).classList.add('bday'));
+    launchConfetti();
+  }
+}
+function pad2(n){return String(Math.floor(n)).padStart(2,'0');}
+
+const CHAT_MSGS = [
+  { side:'recv', text:'yo ngga happy being one year olde?, 1 hope 4 ur best twin✌🏿🥳💀', delay:1200 },
+];
+
+function startChatAnim() {
+  const body=document.getElementById('chat-body');
+  const typi=document.getElementById('typing-ind');
+  body.innerHTML=''; body.appendChild(typi); typi.classList.remove('show');
+  setTimeout(()=>{
+    typi.classList.add('show');
+    setTimeout(()=>{
+      typi.classList.remove('show');
+      addBubble(body,typi,CHAT_MSGS[0]);
+    },1100);
+  },1200);
+}
+
+function addBubble(body,typi,msg){
+  const now=new Date();
+  const ts=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const bub=document.createElement('div');
+  bub.className='bubble recv';
+  bub.innerHTML=msg.text+'<div class="bubble-time">'+ts+'</div>';
+  body.insertBefore(bub,typi);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>bub.classList.add('show')));
+}
+
+function checkWA() {
+  const now=new Date();
+  const active=now.getMonth()===6&&now.getDate()>=5&&now.getDate()<=7;
+  const btn=document.getElementById('wa-btn');
+  const note=document.getElementById('wa-note');
+  const sub=document.getElementById('wa-sub-note');
+  if(active){
+    btn.classList.remove('locked');
+    note.textContent="It's time. Send it. 🎂";
+    sub.textContent='';
+  } else {
+    btn.classList.add('locked');
+    const t5=new Date(now.getFullYear(),6,5);
+    const dLeft=Math.ceil((t5-now)/86400000);
+    sub.textContent=dLeft>0?'Unlocks in '+dLeft+' day'+(dLeft>1?'s':''):'Available July 5–7 only';
+  }
+}
+
+function sendWA(){
+  const now=new Date();
+  if(!(now.getMonth()===6&&now.getDate()>=5&&now.getDate()<=7)) return;
+  const msg=encodeURIComponent("happy birthday ken🥳, I hope u get 1 4 ever happiness and wealth🤑💵 in your life. Don't do dumb🤡");
+  window.open('https://wa.me/6288269400304?text='+msg,'_blank');
+}
+
+function launchConfetti(){
+  const colors=['#CC0000','#C8A84B','#003DA5','#F5F3EE','#25D366','#DC0000','#FFC906'];
+  for(let i=0;i<60;i++) setTimeout(()=>{
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.left=Math.random()*100+'vw';
+    el.style.background=colors[Math.floor(Math.random()*colors.length)];
+    el.style.width=(6+Math.random()*6)+'px';
+    el.style.height=(6+Math.random()*6)+'px';
+    el.style.borderRadius=Math.random()>0.5?'50%':'0';
+    el.style.animationDuration=(2+Math.random()*3)+'s';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),5000);
+  },i*60);
+}
+
+const AudioCtx=window.AudioContext||window.webkitAudioContext;
+let actx=null;
+function getCtx(){if(!actx)actx=new AudioCtx();return actx;}
+
+function playTone(freq,type,dur,vol,startFreq){
+  try{const ctx=getCtx(),osc=ctx.createOscillator(),gain=ctx.createGain();
+  osc.connect(gain);gain.connect(ctx.destination);osc.type=type||'sine';
+  if(startFreq){osc.frequency.setValueAtTime(startFreq,ctx.currentTime);osc.frequency.exponentialRampToValueAtTime(freq,ctx.currentTime+dur*0.5);}
+  else osc.frequency.setValueAtTime(freq,ctx.currentTime);
+  gain.gain.setValueAtTime(vol||0.18,ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+  osc.start(ctx.currentTime);osc.stop(ctx.currentTime+dur);}catch(e){}
+}
+
+function makeNoise(ctx,dur,vol,filterFreq,filterType){
+  const sr=ctx.sampleRate,buf=ctx.createBuffer(1,sr*dur,sr),d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  const src=ctx.createBufferSource();src.buffer=buf;
+  const gain=ctx.createGain();gain.gain.value=vol;
+  if(filterFreq){const f=ctx.createBiquadFilter();f.type=filterType||'bandpass';f.frequency.value=filterFreq;f.Q.value=1.5;src.connect(f);f.connect(gain);}
+  else src.connect(gain);
+  gain.connect(ctx.destination);
+  return{src,gain};
+}
+
+function soundCorrect(){playTone(523,'sine',0.12,0.2);setTimeout(()=>playTone(659,'sine',0.12,0.18),100);setTimeout(()=>playTone(784,'sine',0.22,0.22),200);}
+function soundWrong(){playTone(200,'sawtooth',0.25,0.15,300);}
+function soundClick(){playTone(880,'sine',0.06,0.1);}
+function soundTick(){
+  try{const ctx=getCtx(),buf=ctx.createBuffer(1,ctx.sampleRate*0.04,ctx.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(ctx.sampleRate*0.008));
+  const src=ctx.createBufferSource(),gain=ctx.createGain();
+  src.buffer=buf;gain.gain.value=0.1;src.connect(gain);gain.connect(ctx.destination);src.start();}catch(e){}
+}
+function soundUnlock(){const n=[262,330,392,523,659,784];n.forEach((f,i)=>setTimeout(()=>playTone(f,'sine',0.3,0.15),i*80));}
+
+function soundSpider(){
+  try{const ctx=getCtx(),t=ctx.currentTime;
+  const{src:noise,gain:ng}=makeNoise(ctx,0.6,0,800,'bandpass');
+  ng.gain.setValueAtTime(0.4,t);ng.gain.linearRampToValueAtTime(0.6,t+0.2);ng.gain.exponentialRampToValueAtTime(0.001,t+0.6);
+  const osc=ctx.createOscillator();osc.type='sine';osc.frequency.setValueAtTime(1200,t);osc.frequency.exponentialRampToValueAtTime(200,t+0.15);
+  const og=ctx.createGain();og.gain.setValueAtTime(0.25,t);og.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+  osc.connect(og);og.connect(ctx.destination);noise.start(t);osc.start(t);osc.stop(t+0.2);}catch(e){}
+}
+
+function soundSinatra(){
+  try{const ctx=getCtx(),t=ctx.currentTime;
+  const notes=[233,293,349,466,587];
+  notes.forEach((freq,i)=>{
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type='sawtooth';osc.frequency.value=freq;
+    gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(0.13-i*0.01,t+0.015);gain.gain.exponentialRampToValueAtTime(0.001,t+0.55);
+    const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(800,t);f.frequency.linearRampToValueAtTime(2200,t+0.03);
+    osc.connect(f);f.connect(gain);gain.connect(ctx.destination);osc.start(t);osc.stop(t+0.6);
+  });}catch(e){}
+}
+
+function soundPorsche(){
+  try{const ctx=getCtx(),t=ctx.currentTime,dur=3.0,sr=ctx.sampleRate;
+  const eb=ctx.createBuffer(1,sr*dur,sr),ed=eb.getChannelData(0);
+  for(let i=0;i<ed.length;i++)ed[i]=Math.random()*2-1;
+  const es=ctx.createBufferSource();es.buffer=eb;
+  const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.setValueAtTime(200,t);bp.frequency.exponentialRampToValueAtTime(2200,t+2.2);bp.Q.value=2;
+  const am=ctx.createOscillator();am.type='sine';am.frequency.setValueAtTime(15,t);am.frequency.linearRampToValueAtTime(270,t+2.2);am.frequency.linearRampToValueAtTime(160,t+dur);
+  const amG=ctx.createGain();amG.gain.value=0.5;am.connect(amG);
+  const amD=ctx.createGain();amD.gain.setValueAtTime(0,t);amD.gain.linearRampToValueAtTime(0.5,t+2.2);amD.gain.linearRampToValueAtTime(0.2,t+dur);
+  amG.connect(amD);
+  const mg=ctx.createGain();mg.gain.value=0.3;bp.connect(mg);amD.connect(mg.gain);es.connect(bp);mg.connect(ctx.destination);
+  es.start(t);am.start(t);am.stop(t+dur);}catch(e){}
+}
+
+function soundFerrari(){
+  try{const ctx=getCtx(),t=ctx.currentTime,dur=3.2,sr=ctx.sampleRate;
+  const bb=ctx.createBuffer(1,sr*0.08,sr),bd=bb.getChannelData(0);
+  for(let i=0;i<bd.length;i++)bd[i]=(Math.random()*2-1)*Math.exp(-i/(sr*0.012));
+  const bs=ctx.createBufferSource();bs.buffer=bb;
+  const bg=ctx.createGain();bg.gain.value=0.6;
+  const bf=ctx.createBiquadFilter();bf.type='lowpass';bf.frequency.value=400;
+  bs.connect(bf);bf.connect(bg);bg.connect(ctx.destination);bs.start(t);
+  const eb=ctx.createBuffer(1,sr*dur,sr),ed=eb.getChannelData(0);
+  for(let i=0;i<ed.length;i++)ed[i]=Math.random()*2-1;
+  const es=ctx.createBufferSource();es.buffer=eb;
+  const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.setValueAtTime(150,t);bp.frequency.exponentialRampToValueAtTime(2800,t+2.4);bp.Q.value=1.5;
+  const am=ctx.createOscillator();am.type='square';am.frequency.setValueAtTime(12,t);am.frequency.linearRampToValueAtTime(290,t+2.4);
+  const amG=ctx.createGain();amG.gain.value=0.5;am.connect(amG);
+  const amD=ctx.createGain();amD.gain.setValueAtTime(0,t);amD.gain.linearRampToValueAtTime(0.55,t+2.4);amD.gain.linearRampToValueAtTime(0.2,t+dur);
+  amG.connect(amD);const mg=ctx.createGain();mg.gain.value=0.35;bp.connect(mg);amD.connect(mg.gain);es.connect(bp);mg.connect(ctx.destination);
+  es.start(t);am.start(t);am.stop(t+dur);}catch(e){}
+}
+
+function soundF1(){
+  try{const ctx=getCtx(),t=ctx.currentTime,dur=2.5;
+  const o1=ctx.createOscillator();o1.type='sawtooth';o1.frequency.setValueAtTime(120,t);o1.frequency.exponentialRampToValueAtTime(1600,t+2.1);o1.frequency.exponentialRampToValueAtTime(900,t+dur);
+  const o2=ctx.createOscillator();o2.type='sine';o2.frequency.setValueAtTime(600,t);o2.frequency.exponentialRampToValueAtTime(4000,t+1.8);o2.frequency.exponentialRampToValueAtTime(2000,t+dur);
+  const g1=ctx.createGain();g1.gain.setValueAtTime(0,t);g1.gain.linearRampToValueAtTime(0.3,t+0.05);g1.gain.linearRampToValueAtTime(0.08,t+dur);
+  const g2=ctx.createGain();g2.gain.setValueAtTime(0,t);g2.gain.linearRampToValueAtTime(0.1,t+0.2);g2.gain.exponentialRampToValueAtTime(0.001,t+dur);
+  o1.connect(g1);g1.connect(ctx.destination);o2.connect(g2);g2.connect(ctx.destination);
+  o1.start(t);o1.stop(t+dur);o2.start(t);o2.stop(t+dur);}catch(e){}
+}
+
+function soundMadrid(){
+  try{const ctx=getCtx(),t=ctx.currentTime,dur=2.5,sr=ctx.sampleRate;
+  const cb=ctx.createBuffer(2,sr*dur,sr);
+  for(let ch=0;ch<2;ch++){const d=cb.getChannelData(ch);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;}
+  const cs=ctx.createBufferSource();cs.buffer=cb;
+  const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=800;
+  const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=2200;bp.Q.value=0.4;
+  const cg=ctx.createGain();cg.gain.setValueAtTime(0,t);cg.gain.linearRampToValueAtTime(0.4,t+0.9);cg.gain.exponentialRampToValueAtTime(0.001,t+dur);
+  cs.connect(hp);hp.connect(bp);bp.connect(cg);cg.connect(ctx.destination);cs.start(t);
+  const horn=ctx.createOscillator();horn.type='sine';horn.frequency.value=160;
+  const hg=ctx.createGain();hg.gain.setValueAtTime(0,t+0.2);hg.gain.linearRampToValueAtTime(0.42,t+0.35);hg.gain.exponentialRampToValueAtTime(0.001,t+1.8);
+  horn.connect(hg);hg.connect(ctx.destination);horn.start(t+0.2);horn.stop(t+1.9);}catch(e){}
+}
+</script>
+</body>
+</html>
